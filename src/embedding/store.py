@@ -1,6 +1,5 @@
 import chromadb
 
-
 def get_client() -> chromadb.HttpClient:
     return chromadb.HttpClient(host="localhost", port=8001)
 
