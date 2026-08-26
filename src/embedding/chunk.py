@@ -4,7 +4,6 @@ def _make_chunk_id(metadata: dict, chunk_index: int) -> str:
     key = metadata.get("section_number") or metadata.get("recall_number")
     return f"{metadata['source_type']}:{key}:{chunk_index}"
 
-
 def chunk_documents(
     docs: list[dict], chunk_size: int = 800, chunk_overlap: int = 100
 ) -> list[dict]:
