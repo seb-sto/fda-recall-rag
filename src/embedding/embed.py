@@ -2,6 +2,8 @@ from sentence_transformers import SentenceTransformer
 
 _model = SentenceTransformer("all-MiniLM-L6-v2")
 
+def embed_query(text: str) -> list[float]:
+    return _model.encode([text])[0].tolist()
 
 def embed_documents(chunks: list[dict], batch_size: int = 64) -> list[dict]:
     texts = [c["text"] for c in chunks]
