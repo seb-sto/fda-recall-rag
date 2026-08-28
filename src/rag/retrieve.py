@@ -9,6 +9,7 @@ def retrieve(
     collection_names: list[str] = ALL_COLLECTIONS,
     n_results: int = 5,
     where: dict | None = None,
+    where_document: dict | None = None,
 ) -> list[dict]:
     client = get_client()
     query_embedding = embed_query(query)
@@ -20,6 +21,7 @@ def retrieve(
             query_embeddings=[query_embedding],
             n_results=n_results,
             where=where,
+            where_document=where_document,
         )
         for doc, meta, dist in zip(
             res["documents"][0], res["metadatas"][0], res["distances"][0]
