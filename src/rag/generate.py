@@ -22,14 +22,22 @@ def _format_context(chunks: list[dict]) -> str:
     return "\n\n".join(parts)
 
 
-def generate_answer(question: str, context_chunks: list[dict], model: str | None = None) -> str:
+def generate_answer(
+    question: str,
+    context_chunks: list[dict],
+    history: list[tuple[str, str]] | None = None,
+    model: str | None = None,
+) -> str:
     model = model or os.getenv("LLM_MODEL", "claude-haiku-4-5-20251001")
     context = _format_context(context_chunks)
 
+    messages = []
+    for past_question, past_answer in history or []:
+        messages.append({"role": "user", "content": past_question})
+        messages.append({"role": "assistant", "content": past_answer})
+    messages.append({"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"})
+
     message = _client().messages.create(
-        model=model,
-        max_tokens=1024,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"}],
+        model=model, max_tokens=1024, system=SYSTEM_PROMPT, messages=messages
     )
     return message.content[0].text

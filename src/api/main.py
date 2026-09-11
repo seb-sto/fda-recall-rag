@@ -5,6 +5,8 @@ from src.embedding.store import get_client
 from src.rag.generate import generate_answer
 from src.rag.retrieve import ALL_COLLECTIONS, retrieve
 from src.rag.rerank import rerank
+from src.rag.memory import add_turn, get_history
+
 
 load_dotenv()
 
@@ -56,7 +58,12 @@ def query(request: QueryRequest) -> QueryResponse:
 
     chunks = rerank(request.question, chunks, top_k=request.n_results)
 
-    answer = generate_answer(request.question, chunks)
+    history = get_history(request.session_id) if request.session_id else None
+    answer = generate_answer(request.question, chunks, history=history)
+
+    if request.session_id:
+        add_turn(request.session_id, request.question, answer)
+
     return QueryResponse(answer=answer, sources=[SourceChunk(**c) for c in chunks])
 
 

@@ -10,6 +10,7 @@ class QueryFilters(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str
+    session_id: str | None = None
     filters: QueryFilters | None = None
     n_results: int = 5
 
