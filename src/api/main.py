@@ -4,10 +4,14 @@ from src.api.schemas import DocumentCounts, QueryRequest, QueryResponse, SourceC
 from src.embedding.store import get_client
 from src.rag.generate import generate_answer
 from src.rag.retrieve import ALL_COLLECTIONS, retrieve
+from src.rag.rerank import rerank
 
 load_dotenv()
 
 app = FastAPI(title="FDA Recall RAG")
+
+RERANK_CANDIDATE_MULTIPLIER = 2
+MIN_RERANK_CANDIDATES = 10
 
 SOURCE_TYPE_TO_COLLECTION = {
     "regulation": "regulations",
@@ -26,7 +30,7 @@ def health() -> dict[str, str]:
 def query(request: QueryRequest) -> QueryResponse:
     collection_names = ALL_COLLECTIONS
     where = None
-    fetch_n = request.n_results
+    fetch_n = max(request.n_results * RERANK_CANDIDATE_MULTIPLIER, MIN_RERANK_CANDIDATES)
 
     if request.filters:
         if request.filters.source_type:
@@ -34,7 +38,7 @@ def query(request: QueryRequest) -> QueryResponse:
         if request.filters.cfr_part:
             where = {"cfr_part": request.filters.cfr_part}
         if request.filters.state:
-            fetch_n = request.n_results * 5  # over-fetch; state is filtered after retrieval
+            fetch_n *= 5
 
     chunks = retrieve(
         request.question,
@@ -48,7 +52,9 @@ def query(request: QueryRequest) -> QueryResponse:
         chunks = [
             c for c in chunks
             if state in c["metadata"].get("distribution_pattern", "").upper()
-        ][: request.n_results]
+        ]
+
+    chunks = rerank(request.question, chunks, top_k=request.n_results)
 
     answer = generate_answer(request.question, chunks)
     return QueryResponse(answer=answer, sources=[SourceChunk(**c) for c in chunks])
