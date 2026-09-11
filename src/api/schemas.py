@@ -18,6 +18,7 @@ class SourceChunk(BaseModel):
     text: str
     metadata: dict
     distance: float
+    rerank_score: float | None = None
 
 
 class QueryResponse(BaseModel):
