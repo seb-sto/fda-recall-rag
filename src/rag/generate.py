@@ -40,4 +40,4 @@ def generate_answer(
     message = _client().messages.create(
         model=model, max_tokens=1024, system=SYSTEM_PROMPT, messages=messages
     )
-    return message.content[0].text
+    return next(block.text for block in message.content if block.type == "text")

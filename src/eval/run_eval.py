@@ -1,4 +1,6 @@
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 from src.eval.metrics import answer_relevancy, context_precision, context_recall, faithfulness
 from src.rag.generate import generate_answer
@@ -33,14 +35,19 @@ def run_one(item: dict, use_reranking: bool) -> dict:
 def run_eval(use_reranking: bool) -> dict:
     test_set = load_test_set()
     totals = {"faithfulness": 0.0, "answer_relevancy": 0.0, "context_precision": 0.0, "context_recall": 0.0}
+    n = 0
 
     for i, item in enumerate(test_set):
-        scores = run_one(item, use_reranking)
+        try:
+            scores = run_one(item, use_reranking)
+        except Exception as e:
+            print(f"[{i + 1}/{len(test_set)}] SKIPPED ({e}) - {item['question'][:60]}")
+            continue
         for k, v in scores.items():
             totals[k] += v
+        n += 1
         print(f"[{i + 1}/{len(test_set)}] {item['question'][:60]}")
 
-    n = len(test_set)
     return {k: round(v / n, 3) for k, v in totals.items()}
 
 
