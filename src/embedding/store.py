@@ -1,7 +1,10 @@
 import chromadb
+import os
 
 def get_client() -> chromadb.HttpClient:
-    return chromadb.HttpClient(host="localhost", port=8001)
+    host = os.getenv("CHROMA_HOST", "localhost")
+    port = int(os.getenv("CHROMA_PORT", "8001"))
+    return chromadb.HttpClient(host=host, port=port)
 
 def upsert_chunks(collection_name: str, chunks: list[dict]) -> None:
     client = get_client()
