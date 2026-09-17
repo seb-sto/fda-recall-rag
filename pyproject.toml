@@ -28,7 +28,11 @@ dev = [
 
 [tool.mypy]
 explicit_package_bases = true
+
 [[tool.mypy.overrides]]
 module = ["chromadb.*", "slowapi.*"]
 ignore_missing_imports = true
 follow_imports = "skip"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
