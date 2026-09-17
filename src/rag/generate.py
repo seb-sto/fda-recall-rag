@@ -1,5 +1,7 @@
 import os
+
 import anthropic
+from anthropic.types import MessageParam
 
 SYSTEM_PROMPT = """You are an FDA regulatory and recall compliance assistant.
 Answer only using the provided context. If the context does not contain
@@ -28,16 +30,16 @@ def generate_answer(
     history: list[tuple[str, str]] | None = None,
     model: str | None = None,
 ) -> str:
-    model = model or os.getenv("LLM_MODEL", "claude-haiku-4-5-20251001")
+    resolved_model = model if model is not None else os.getenv("LLM_MODEL", "claude-haiku-4-5-20251001")
     context = _format_context(context_chunks)
 
-    messages = []
+    messages: list[MessageParam] = []
     for past_question, past_answer in history or []:
         messages.append({"role": "user", "content": past_question})
         messages.append({"role": "assistant", "content": past_answer})
     messages.append({"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"})
 
     message = _client().messages.create(
-        model=model, max_tokens=1024, system=SYSTEM_PROMPT, messages=messages
+        model=resolved_model, max_tokens=1024, system=SYSTEM_PROMPT, messages=messages
     )
     return next(block.text for block in message.content if block.type == "text")

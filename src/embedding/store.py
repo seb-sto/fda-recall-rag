@@ -1,5 +1,7 @@
-import chromadb
 import os
+
+import chromadb
+
 
 def get_client() -> chromadb.HttpClient:
     host = os.getenv("CHROMA_HOST", "localhost")

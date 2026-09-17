@@ -1,8 +1,15 @@
 import json
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
-from src.eval.metrics import answer_relevancy, context_precision, context_recall, faithfulness
+from src.eval.metrics import (
+    answer_relevancy,
+    context_precision,
+    context_recall,
+    faithfulness,
+)
 from src.rag.generate import generate_answer
 from src.rag.rerank import rerank
 from src.rag.retrieve import retrieve
@@ -40,7 +47,7 @@ def run_eval(use_reranking: bool) -> dict:
     for i, item in enumerate(test_set):
         try:
             scores = run_one(item, use_reranking)
-        except Exception as e:
+        except Exception as e:   # noqa: BLE001
             print(f"[{i + 1}/{len(test_set)}] SKIPPED ({e}) - {item['question'][:60]}")
             continue
         for k, v in scores.items():

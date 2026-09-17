@@ -25,3 +25,10 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.8",
 ]
+
+[tool.mypy]
+explicit_package_bases = true
+[[tool.mypy.overrides]]
+module = ["chromadb.*", "slowapi.*"]
+ignore_missing_imports = true
+follow_imports = "skip"

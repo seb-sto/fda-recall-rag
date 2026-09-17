@@ -9,6 +9,8 @@ load_dotenv()
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise RuntimeError("API_KEY environment variable is not set")
 
 st.set_page_config(page_title="FDA Recall RAG", page_icon="🔍")
 st.title("FDA Recall & Compliance Assistant")
@@ -39,7 +41,7 @@ for past_q, past_a, past_sources in st.session_state.history:
 question = st.chat_input("Ask a question about FDA regulations or recalls...")
 
 if question:
-    filters = {}
+    filters: dict[str, str | int] = {}
     if source_type != "(any)":
         filters["source_type"] = source_type
     if cfr_part.strip():

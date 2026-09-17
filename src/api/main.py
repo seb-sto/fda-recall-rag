@@ -1,22 +1,22 @@
-from dotenv import load_dotenv
 import time
 import uuid
 
-from fastapi import Depends, FastAPI, Request, HTTPException
+import structlog
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, HTTPException, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-import structlog
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.api.auth import verify_api_key
+from src.api.logging_config import configure_logging, logger
 from src.api.schemas import DocumentCounts, QueryRequest, QueryResponse, SourceChunk
 from src.embedding.store import get_client
 from src.rag.generate import generate_answer
 from src.rag.memory import add_turn, get_history
 from src.rag.rerank import rerank
 from src.rag.retrieve import ALL_COLLECTIONS, retrieve
-from src.api.logging_config import configure_logging, logger
 
 load_dotenv()
 configure_logging()

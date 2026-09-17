@@ -1,6 +1,9 @@
-from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
 import requests
+
 from src.ingestion.base import IngestorBase
+
 
 class OpenFDAEnforcementIngestor(IngestorBase):
     PAGE_SIZE = 1000
@@ -20,7 +23,7 @@ class OpenFDAEnforcementIngestor(IngestorBase):
 
     def fetch(self) -> list[dict]:
         results = []
-        params = {"limit": self.PAGE_SIZE}
+        params: dict[str, str | int] = {"limit": self.PAGE_SIZE}
         if self.api_key:
             params["api_key"] = self.api_key
 

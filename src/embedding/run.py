@@ -1,4 +1,5 @@
 import json
+
 from src.embedding.chunk import chunk_documents
 from src.embedding.embed import embed_documents
 from src.embedding.store import upsert_chunks
@@ -12,7 +13,7 @@ SOURCES = [
 
 def main():
     for path, collection_name in SOURCES:
-        docs = [json.loads(line) for line in open(path)]
+        with open(path) as f: docs = [json.loads(line) for line in f]
         chunks = chunk_documents(docs)
         chunks = embed_documents(chunks)
         upsert_chunks(collection_name, chunks)

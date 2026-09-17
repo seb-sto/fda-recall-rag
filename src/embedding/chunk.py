@@ -1,5 +1,6 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+
 def _make_chunk_id(metadata: dict, chunk_index: int) -> str:
     key = metadata.get("section_number") or metadata.get("recall_number")
     return f"{metadata['source_type']}:{key}:{chunk_index}"
