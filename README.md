@@ -35,7 +35,8 @@ See [`docs/design-decisions.md`](docs/design-decisions.md) for the reasoning beh
 
 ## Screenshots
 
-<!-- TODO: capture a real Streamlit conversation once the UI is finalized -->
+![Streamlit UI Screenshot](docs/assets/streamlit.png)
+*Figure 1: Streamlit Chat Interface*
 
 ---
 
