@@ -31,7 +31,20 @@ A retrieval-augmented question-answering system over real FDA data — 21 CFR re
 
 Pipeline: **eCFR API + openFDA API** → **ingestors** (`IngestorBase` pattern, shared `fetch()`/`parse()`/`to_documents()` interface) → **chunking** (`RecursiveCharacterTextSplitter`, clause-aware) → **local embeddings** (`all-MiniLM-L6-v2`) → **4 ChromaDB collections** (`regulations`, `food_recalls`, `drug_recalls`, `device_recalls`) → **retrieval + metadata filtering + cross-encoder reranking** → **Claude** (citation-enforcing system prompt) → **FastAPI** (auth, rate limiting, structured logging, conversation memory) → **Streamlit** chat UI.
 
-See [`docs/design-decisions.md`](docs/design-decisions.md) for the reasoning behind each of these choices, and [`docs/evaluation.md`](docs/evaluation.md) for measured retrieval/generation quality (RAGAS-style, hand-rolled).
+See [`docs/design-decisions.md`](docs/design-decisions.md) for the reasoning behind each of these choices.
+
+### Evaluation
+
+RAGAS-style metrics (hand-rolled — see [`docs/evaluation.md`](docs/evaluation.md) for why and how), measured on 36 hand-written, source-grounded Q&A pairs, baseline vs. cross-encoder reranking:
+
+| Metric | Baseline (no reranking) | With reranking | Change |
+|---|---|---|---|
+| Faithfulness | 0.755 | 0.754 | ~flat |
+| Answer relevancy | 0.986 | 0.969 | ~flat |
+| Context precision | 0.300 | 0.350 | +17% |
+| Context recall | 0.697 | 0.728 | +4.4% |
+
+Reranking's effect concentrates exactly where it should — retrieval quality (precision, recall) — while faithfulness and answer relevancy stay high and flat in both conditions, consistent with the citation-enforcing system prompt doing its job at the generation layer regardless of retrieval quality.
 
 ## Screenshots
 
@@ -179,7 +192,9 @@ fda-recall-rag/
 │   ├── design-decisions.md   # trade-offs and why
 │   ├── data-dictionary.md    # metadata schema per collection
 │   └── assets/
-│       └── cited-answer-mark.png
+│       ├── project_logo.png
+│       ├── architecture.png
+│       └── streamlit.png
 └── .github/
     └── workflows/
         └── ci.yml             # ruff, mypy, pytest — no secrets required
