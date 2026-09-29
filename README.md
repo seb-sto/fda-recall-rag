@@ -27,7 +27,7 @@ A retrieval-augmented question-answering system over real FDA data — 21 CFR re
 
 ## Architecture
 
-<!-- TODO: architecture diagram — eCFR + openFDA → ingestors → ChromaDB (4 collections) → retrieval + reranking → Claude → FastAPI → Streamlit -->
+![FDA Recall RAG Architecture ](docs/assets/architecture.png)
 
 Pipeline: **eCFR API + openFDA API** → **ingestors** (`IngestorBase` pattern, shared `fetch()`/`parse()`/`to_documents()` interface) → **chunking** (`RecursiveCharacterTextSplitter`, clause-aware) → **local embeddings** (`all-MiniLM-L6-v2`) → **4 ChromaDB collections** (`regulations`, `food_recalls`, `drug_recalls`, `device_recalls`) → **retrieval + metadata filtering + cross-encoder reranking** → **Claude** (citation-enforcing system prompt) → **FastAPI** (auth, rate limiting, structured logging, conversation memory) → **Streamlit** chat UI.
 
